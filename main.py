@@ -64,14 +64,25 @@
 
 #%%[markdown]
 
-### Importing Needed Libraries
+### Importing Needed Libraries and accessing other py files(feature-extraction).
 
 #%%
 
 import os 
+import sys
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
+from feature_extraction import process_data
+
+# # Getting the current script's directory
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# # Adding the parent directory to the Python path
+# sys.path.append(os.path.dirname(current_dir))
+
+# # Import other python files.
+#
 
 #%%[markdown]
 
@@ -246,6 +257,7 @@ print(top_10_common_questions)
 ### Distribution of Question Lengths:
 
 #%%
+# Function to count the number of words in a sentence
 def count_words(sentence):
     # Handle the case where the sentence is NaN (missing value)
     if pd.isnull(sentence):
@@ -253,14 +265,10 @@ def count_words(sentence):
     # Count the number of words by splitting the sentence
     return len(str(sentence).split())
 
-# Apply the count_words function to 'question1' and 'question2' for each row
-data['q1_len'] = data['question1'].apply(lambda x: count_words(x))
-data['q2_len'] = data['question2'].apply(lambda x: count_words(x))
-
 # Plot histograms for question lengths
 plt.figure(figsize=(12, 6))
-plt.hist(data['q1_len'], bins=50, alpha=0.5, label='Question 1', color='blue')
-plt.hist(data['q2_len'], bins=50, alpha=0.5, label='Question 2', color='orange')
+plt.hist(data['question1'].apply(lambda x: count_words(x)), bins=50, alpha=0.5, label='Question 1', color='blue')
+plt.hist(data['question2'].apply(lambda x: count_words(x)), bins=50, alpha=0.5, label='Question 2', color='orange')
 
 # Title and labels
 plt.title('Distribution of Question Lengths', fontsize=16)
@@ -272,4 +280,36 @@ plt.legend()
 
 plt.show()
 
+#%%[markdown]
+
+# References for feature extraction:
+# - Kaggle Winning Solution and other approaches: https://www.dropbox.com/sh/93968nfnrzh8bp5/AACZdtsApc1QSTQc7X0H3QZ5a?dl=0
+# - Blog 1 : https://engineering.quora.com/Semantic-Question-Matching-with-Deep-Learning
+# - Blog 2 : https://towardsdatascience.com/identifying-duplicate-questions-on-quora-top-12-on-kaggle-4c1cf93f1c30
+
+#%%[markdown]
+
+### Feature Extraction 
+
+# - ____freq_qid1____ = Frequency of qid1's
+# - ____freq_qid2____ = Frequency of qid2's 
+# - ____q1len____ = Length of q1
+# - ____q2len____ = Length of q2
+# - ____q1_n_words____ = Number of words in Question 1
+# - ____q2_n_words____ = Number of words in Question 2
+# - ____word_Common____ = (Number of common unique words in Question 1 and Question 2)
+# - ____word_Total____ =(Total num of words in Question 1 + Total num of words in Question 2)
+# - ____word_share____ = (word_common)/(word_Total)
+# - ____freq_q1+freq_q2____ = sum total of frequency of qid1 and qid2 
+# - ____freq_q1-freq_q2____ = absolute difference of frequency of qid1 and qid2 
+
 #%%
+
+# %%
+file_path = "df_fe_without_preprocessing_train.csv"
+data = process_data(file_path)
+
+#%%
+data.head(5)
+
+# %%
