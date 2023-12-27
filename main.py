@@ -230,29 +230,46 @@ plt.show()
 
 #%%[markdown]
 
-### Top 10 Most asked questions on quora
+### Top 10 Most asked questions on Quora:
 
 #%%
-import matplotlib.pyplot as plt
+all_questions = pd.concat([data['question1'], data['question2']], ignore_index=True)
 
+# Display the top 10 most common questions
+top_10_common_questions = all_questions.value_counts().head(10)
+
+print("Top 10 Most Common Questions:")
+print(top_10_common_questions)
+
+#%%[markdown]
+
+### Distribution of Question Lengths:
+
+#%%
 def count_words(sentence):
+    # Handle the case where the sentence is NaN (missing value)
     if pd.isnull(sentence):
         return 0
+    # Count the number of words by splitting the sentence
     return len(str(sentence).split())
 
 # Apply the count_words function to 'question1' and 'question2' for each row
-data['question1_length'] = data['question1'].apply(lambda x: count_words(x))
-data['question2_length'] = data['question2'].apply(lambda x: count_words(x))
+data['q1_len'] = data['question1'].apply(lambda x: count_words(x))
+data['q2_len'] = data['question2'].apply(lambda x: count_words(x))
 
 # Plot histograms for question lengths
 plt.figure(figsize=(12, 6))
-plt.hist(data['question1_length'], bins=50, alpha=0.5, label='Question 1', color='blue')
-plt.hist(data['question2_length'], bins=50, alpha=0.5, label='Question 2', color='orange')
+plt.hist(data['q1_len'], bins=50, alpha=0.5, label='Question 1', color='blue')
+plt.hist(data['q2_len'], bins=50, alpha=0.5, label='Question 2', color='orange')
 
+# Title and labels
 plt.title('Distribution of Question Lengths', fontsize=16)
 plt.xlabel('Number of words', fontsize=14)
 plt.ylabel('Frequency', fontsize=14)
 
+# Display legend
 plt.legend()
 
 plt.show()
+
+#%%
