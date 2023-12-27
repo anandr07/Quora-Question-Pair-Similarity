@@ -74,6 +74,7 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 from feature_extraction import process_data
+import seaborn as sns
 
 # # Getting the current script's directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -311,5 +312,84 @@ data = process_data(file_path)
 
 #%%
 data.head(5)
+
+# %%[markdown]
+
+### Check for questions with 2 words or less than 2 words
+
+#%%
+# Filter sentences with 2 words or less in either q1 or q2
+filtered_data = data[(data['q1_n_words'] <= 2) | (data['q2_n_words'] <= 2)]
+
+# Print the filtered sentences along with is_duplicate column and the number of sentences
+num_sentences = len(filtered_data)
+print(f"Number of Sentences: {num_sentences}\n")
+
+for index, row in filtered_data.head(10).iterrows():
+    print(f"Q1: {row['question1']}")
+    print(f"Q2: {row['question2']}")
+    print(f"Is Duplicate: {row['is_duplicate']}")
+    print("-" * 50)
+
+# %%
+print ("Minimum length of the questions in question1 : " , min(data['q1_n_words']))
+
+print ("Minimum length of the questions in question2 : " , min(data['q2_n_words']))
+
+print ("Number of Questions with minimum length [question1] :", data[data['q1_n_words']== 1].shape[0])
+print ("Number of Questions with minimum length [question2] :", data[data['q2_n_words']== 1].shape[0])
+
+#%%[markdown]
+
+# Univariate Analysis : 'freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words','word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2'.
+
+#%%
+# List of columns to plot
+columns_to_plot = ['freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words',
+                   'word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2']
+
+# Loop through each column and create plots
+for column in columns_to_plot:
+    plt.figure(figsize=(12, 8))
+
+    plt.subplot(1, 2, 1)
+    sns.violinplot(x='is_duplicate', y=column, data=data)
+
+    plt.subplot(1, 2, 2)
+    sns.histplot(data[data['is_duplicate'] == 1.0][column], label="1", color='red', kde=True)
+    sns.histplot(data[data['is_duplicate'] == 0.0][column], label="0", color='blue', kde=True)
+    
+    # Add legend and labels
+    plt.legend()
+    
+    # Set the title at the center for the entire figure
+    plt.suptitle(f'Distribution of {column} for Duplicate and Non-duplicate Questions', fontsize=16, ha='center')
+    
+    plt.xlabel(column)
+    plt.ylabel('Density')
+    
+    plt.show()
+
+#%%[markdown]
+
+### Important features in differentiating Duplicate(Similar) and Non-Duplicate(Dissimilar) Questions.
+
+# 1. Distribution of q1len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 2. Distribution of q2len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 3. Distribution of q1_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 4. Distribution of q2_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 5. Distribution of word_Total for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 6. Distribution of word_share for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+
+#%%[markdown]
+    
+### Pre-processing of Text 
+    
+# - Preprocessing:
+# 1. Removing html tags 
+# 2. Removing Punctuations
+# 3. Performing stemming
+# 4. Removing Stopwords
+# 5. Expanding contractions etc.
 
 # %%
