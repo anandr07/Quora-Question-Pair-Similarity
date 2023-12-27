@@ -73,7 +73,7 @@ import sys
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
-from feature_extraction import process_data
+from feature_extraction import process_data, extract_features
 import seaborn as sns
 
 # # Getting the current script's directory
@@ -460,5 +460,16 @@ for column in columns_to_plot:
 # <br>
 
 # - __longest_substr_ratio__ :  Ratio of length longest common substring to min lenghth of token count of Q1 and Q2<br>longest_substr_ratio = len(longest common substring) / (min(len(q1_tokens), len(q2_tokens))
+
+#%%
+if os.path.isfile('nlp_features_train.csv'):
+    df = pd.read_csv("nlp_features_train.csv",encoding='latin-1')
+    df.fillna('')
+else:
+    print("Extracting features for train:")
+    df = pd.read_csv("data/train.csv")
+    df = extract_features(df)
+    df.to_csv("nlp_features_train.csv", index=False)
+df.head(2)      
 
 #%%
