@@ -75,7 +75,7 @@ import matplotlib.pyplot as plt
 
 #%%[markdown]
 
-### Load the Data and Perform Basic Analysis
+### Load the Data and Perform Data Analysis
 
 #%%
 data = pd.read_csv('data/train.csv')
@@ -202,4 +202,57 @@ print(interchanged_qid_rows)
 total_duplicates = len(same_qid_rows) + len(interchanged_qid_rows)
 print("Total number of duplicate pairs:", total_duplicates)
 
-# %%
+# %%[markdown]
+
+# Number of Occurances of each question.
+
+#%%
+plt.figure(figsize=(20, 10))
+
+counts, bins, _ = plt.hist(qids.value_counts(), bins=160, color='skyblue', edgecolor='black')
+
+plt.yscale('log', nonpositive='clip')
+
+plt.title('Log-Histogram of question appearance counts', fontsize=16)
+plt.xlabel('Number of occurrences of question', fontsize=14)
+plt.ylabel('Number of questions', fontsize=14)
+
+max_occurrence = max(qids.value_counts())
+plt.axvline(x=max_occurrence, color='red', linestyle='--', label=f'Max Occurrence: {max_occurrence}')
+
+plt.legend()
+
+plt.show()
+
+# %%[markdown]
+
+# The plot is close to a power-law distribution not exactly power-law but close to it.
+
+#%%[markdown]
+
+### Top 10 Most asked questions on quora
+
+#%%
+import matplotlib.pyplot as plt
+
+def count_words(sentence):
+    if pd.isnull(sentence):
+        return 0
+    return len(str(sentence).split())
+
+# Apply the count_words function to 'question1' and 'question2' for each row
+data['question1_length'] = data['question1'].apply(lambda x: count_words(x))
+data['question2_length'] = data['question2'].apply(lambda x: count_words(x))
+
+# Plot histograms for question lengths
+plt.figure(figsize=(12, 6))
+plt.hist(data['question1_length'], bins=50, alpha=0.5, label='Question 1', color='blue')
+plt.hist(data['question2_length'], bins=50, alpha=0.5, label='Question 2', color='orange')
+
+plt.title('Distribution of Question Lengths', fontsize=16)
+plt.xlabel('Number of words', fontsize=14)
+plt.ylabel('Frequency', fontsize=14)
+
+plt.legend()
+
+plt.show()
