@@ -75,7 +75,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from feature_extraction import process_data, extract_features
 import seaborn as sns
-from mpl_toolkits.mplot3d import Axes3D
 
 # # Getting the current script's directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -243,7 +242,7 @@ plt.show()
 
 #%%[markdown]
 
-#### Top 10 Most asked questions on Quora:
+### Top 10 Most asked questions on Quora:
 
 #%%
 all_questions = pd.concat([data['question1'], data['question2']], ignore_index=True)
@@ -256,7 +255,7 @@ print(top_10_common_questions)
 
 #%%[markdown]
 
-#### Distribution of Question Lengths:
+### Distribution of Question Lengths:
 
 #%%
 # Function to count the number of words in a sentence
@@ -316,7 +315,7 @@ data.head(5)
 
 # %%[markdown]
 
-#### Check for questions with 2 words or less than 2 words
+### Check for questions with 2 words or less than 2 words
 
 #%%
 # Filter sentences with 2 words or less in either q1 or q2
@@ -342,7 +341,7 @@ print ("Number of Questions with minimum length [question2] :", data[data['q2_n_
 
 #%%[markdown]
 
-#### Univariate Analysis : 'freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words','word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2'.
+# Univariate Analysis : 'freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words','word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2'.
 
 #%%
 # List of columns to plot
@@ -371,23 +370,8 @@ for column in columns_to_plot:
     
     plt.show()
 
-#%%
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-
-ax.scatter(data['word_Total'], data['word_share'], data['q2_n_words'], c=data['is_duplicate'], marker='o')
-
-ax.set_xlabel('Feature 1')
-ax.set_ylabel('Feature 2')
-ax.set_zlabel('Feature 3')
-ax.set_title('3D Scatter Plot')
-
-plt.show()
-
-# 'word_Total' and 'word_share' together do a good job in differentiating Duplicates and Non-Duplicates.
-
 #%%[markdown]
-#### Important features in differentiating Duplicate(Similar) and Non-Duplicate(Dissimilar) Questions.
+### Important features in differentiating Duplicate(Similar) and Non-Duplicate(Dissimilar) Questions.
 
 # 1. Distribution of q1len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
 # 2. Distribution of q2len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
@@ -408,7 +392,7 @@ plt.show()
 # 5. Expanding contractions etc.
 
 #%%[markdown] 
-#### Feature Extraction after pre-processing.
+### Feature Extraction after pre-processing.
 
 # Featurization (NLP and Fuzzy Features)
     
@@ -417,9 +401,8 @@ plt.show()
 # - __Token__: You get a token by splitting sentence a space
 # - __Stop_Word__ : stop words as per NLTK.
 # - __Word__ : A token that is not a stop_word
-# <br>
-# <br>    
-# __Features__:
+
+# Features:
 # - __cwc_min__ :  Ratio of common_word_count to min lenghth of word count of Q1 and Q2 <br>cwc_min = common_word_count / (min(len(q1_words), len(q2_words))
 # <br>
 # <br>
@@ -435,18 +418,23 @@ plt.show()
 # - __ctc_min__ :  Ratio of common_token_count to min lenghth of token count of Q1 and Q2<br>ctc_min = common_token_count / (min(len(q1_tokens), len(q2_tokens))
 # <br>
 # <br>
+
 # - __ctc_max__ :  Ratio of common_token_count to max lenghth of token count of Q1 and Q2<br>ctc_max = common_token_count / (max(len(q1_tokens), len(q2_tokens))
 # <br>
 # <br>
+        
 # - __last_word_eq__ :  Check if First word of both questions is equal or not<br>last_word_eq = int(q1_tokens[-1] == q2_tokens[-1])
 # <br>
 # <br>
+
 # - __first_word_eq__ :  Check if First word of both questions is equal or not<br>first_word_eq = int(q1_tokens[0] == q2_tokens[0])
 # <br>
-# <br>       
+# <br>
+        
 # - __abs_len_diff__ :  Abs. length difference<br>abs_len_diff = abs(len(q1_tokens) - len(q2_tokens))
 # <br>
 # <br>
+
 # - __mean_len__ :  Average Token Length of both Questions<br>mean_len = (len(q1_tokens) + len(q2_tokens))/2
 # <br>
 # <br>
@@ -475,14 +463,14 @@ plt.show()
 
 #%%
 if os.path.isfile('nlp_features_train.csv'):
-    data = pd.read_csv("nlp_features_train.csv",encoding='latin-1')
-    data.fillna('')
+    df = pd.read_csv("nlp_features_train.csv",encoding='latin-1')
+    df.fillna('')
 else:
     print("Extracting features for train:")
-    data = pd.read_csv("data/train.csv")
-    data = extract_features(data)
-    data.to_csv("nlp_features_train.csv", index=False)
-data.head(2)      
+    df = pd.read_csv("data/train.csv")
+    df = extract_features(df)
+    df.to_csv("nlp_features_train.csv", index=False)
+df.head(2)      
 
 #%%[markdown]
 
@@ -505,26 +493,6 @@ for i, feature in enumerate(['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_mi
     plt.subplot(4, 4, i + 1)
     sns.violinplot(x='is_duplicate', y=feature, data=data)
     plt.title(f'Violin Plot for {feature}')
-
-plt.tight_layout()
-plt.show()
-
-#%%
-plt.figure(figsize=(16, 20))
-
-# Plot violin plot and density plot for each specified column
-for i, feature in enumerate(['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_min', 'ctc_max',
-                             'last_word_eq', 'first_word_eq', 'abs_len_diff', 'mean_len',
-                             'token_set_ratio', 'token_sort_ratio', 'fuzz_ratio',
-                             'fuzz_partial_ratio', 'longest_substr_ratio']):
-    plt.subplot(8, 4, 2*i + 1)
-    sns.violinplot(x='is_duplicate', y=feature, data=data)
-    plt.title(f'Violin Plot for {feature}')
-
-    plt.subplot(8, 4, 2*i + 2)
-    sns.kdeplot(data[data['is_duplicate'] == 1][feature], label='Duplicate', shade=True)
-    sns.kdeplot(data[data['is_duplicate'] == 0][feature], label='Not Duplicate', shade=True)
-    plt.title(f'Density Plot for {feature}')
 
 plt.tight_layout()
 plt.show()

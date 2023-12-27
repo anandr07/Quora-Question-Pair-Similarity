@@ -14,7 +14,8 @@ def process_data(file_path):
     if os.path.isfile(file_path):
         data = pd.read_csv(file_path, encoding='latin-1')
     else:
-        data = pd.read_csv(file_path)
+        # data = pd.read_csv("data/train.csv")
+        data.dropna(subset=['question1', 'question2'], inplace=True)
         data['freq_qid1'] = data.groupby('qid1')['qid1'].transform('count') 
         data['freq_qid2'] = data.groupby('qid2')['qid2'].transform('count')
         data['q1len'] = data['question1'].str.len() 
