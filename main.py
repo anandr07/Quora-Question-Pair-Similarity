@@ -74,6 +74,7 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 from feature_extraction import process_data, extract_features
+from ml_algorithms.tSNE_for_data_visualization import plot_tsne_visualization
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -529,4 +530,121 @@ for i, feature in enumerate(['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_mi
 plt.tight_layout()
 plt.show()
 
-#%%
+#%%[markdown]
+### Visualizing in lower dimension using t-SNE
+
+plot_tsne_visualization(data)
+
+#%%[markdown]
+### Featurizing text data with Tf-Idf weighted word-vectors
+
+# %%
+import pandas as pd
+import matplotlib.pyplot as plt
+import re
+import time
+import warnings
+import numpy as np
+from nltk.corpus import stopwords
+from sklearn.preprocessing import normalize
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+warnings.filterwarnings("ignore")
+import sys
+import os 
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+import spacy
+
+# Load the dataset
+df = pd.read_csv('data/train.csv')
+
+# Encode questions to unicode
+df['question1'] = df['question1'].apply(lambda x: str(x))
+df['question2'] = df['question2'].apply(lambda x: str(x))
+
+# Combine texts
+questions = list(df['question1']) + list(df['question2'])
+
+# TF-IDF vectorization
+tfidf = TfidfVectorizer(lowercase=False)
+tfidf.fit_transform(questions)
+word2tfidf = dict(zip(tfidf.get_feature_names_out(), tfidf.idf_))
+
+# Download spaCy model
+!python -m spacy download en_core_web_lg
+nlp = spacy.load('en_core_web_lg')
+
+# Extract features using spaCy
+vecs1 = []
+vecs2 = []
+
+for qu1, qu2 in tqdm(zip(list(df['question1']), list(df['question2']))):
+    doc1 = nlp(qu1)
+    mean_vec1 = np.zeros([len(doc1), len(doc1[0].vector)])
+
+    for word1 in doc1:
+        vec1 = word1.vector
+        try:
+            idf = word2tfidf[str(word1)]
+        except:
+            idf = 0
+        mean_vec1 += vec1 * idf
+
+    mean_vec1 = mean_vec1.mean(axis=0)
+    vecs1.append(mean_vec1)
+
+    doc2 = nlp(qu2)
+    mean_vec2 = np.zeros([len(doc2), len(doc2[0].vector)])
+
+    for word2 in doc2:
+        vec2 = word2.vector
+        try:
+            idf = word2tfidf[str(word2)]
+        except:
+            idf = 0
+        mean_vec2 += vec2 * idf
+
+    mean_vec2 = mean_vec2.mean(axis=0)
+    vecs2.append(mean_vec2)
+
+df['q1_feats_m'] = list(vecs1)
+df['q2_feats_m'] = list(vecs2)
+
+# Load preprocessed features
+if os.path.isfile('nlp_features_train.csv'):
+    dfnlp = pd.read_csv("nlp_features_train.csv", encoding='latin-1')
+else:
+    print("Download nlp_features_train.csv from drive or run previous notebook")
+
+if os.path.isfile('df_fe_without_preprocessing_train.csv'):
+    dfppro = pd.read_csv("df_fe_without_preprocessing_train.csv", encoding='latin-1')
+else:
+    print("Download df_fe_without_preprocessing_train.csv from drive or run previous notebook")
+
+# Drop unnecessary columns
+df1 = dfnlp.drop(['qid1', 'qid2', 'question1', 'question2'], axis=1)
+df2 = dfppro.drop(['qid1', 'qid2', 'question1', 'question2', 'is_duplicate'], axis=1)
+df3 = df.drop(['qid1', 'qid2', 'question1', 'question2', 'is_duplicate'], axis=1)
+df3_q1 = pd.DataFrame(df3.q1_feats_m.values.tolist(), index=df3.index)
+df3_q2 = pd.DataFrame(df3.q2_feats_m.values.tolist(), index=df3.index)
+
+# Display information about features
+print("Number of features in nlp dataframe:", df1.shape[1])
+print("Number of features in preprocessed dataframe:", df2.shape[1])
+print("Number of features in question1 w2v dataframe:", df3_q1.shape[1])
+print("Number of features in question2 w2v dataframe:", df3_q2.shape[1])
+print("Number of features in the final dataframe:", df1.shape[1] + df2.shape[1] + df3_q1.shape[1] + df3_q2.shape[1])
+
+# Store the final features to a CSV file
+if not os.path.isfile('final_features.csv'):
+    df3_q1['id'] = df1['id']
+    df3_q2['id'] = df1['id']
+    df1 = df1.merge(df2, on='id', how='left')
+    df2 = df3_q1.merge(df3_q2, on='id', how='left')
+    result = df1.merge(df2, on='id', how='left')
+    result.to_csv('final_features.csv')
+
+# %%
+
