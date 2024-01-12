@@ -67,17 +67,28 @@
 ### Importing Needed Libraries and accessing other py files(feature-extraction).
 
 #%%
-
 import os 
 import sys
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
-from feature_extraction import process_data, extract_features
+# from feature_extraction import process_data, extract_features
+from feature_extraction import process_and_extract_features
 from ml_algorithms.tSNE_for_data_visualization import plot_tsne_visualization
 import seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 
+
+
+#%%
+# Importing other files from ml_algorithms folder:
+
+import sys
+sys.path.append(os.getcwd()+'\ml_algorithms')
+
+#%%
+from Logistic_Regression import logistic_regression_function
+from SGDClassfier_RandomSearch_V1 import sgd_random_search_v1
 # # Getting the current script's directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -306,97 +317,6 @@ plt.show()
 # - ____freq_q1+freq_q2____ = sum total of frequency of qid1 and qid2 
 # - ____freq_q1-freq_q2____ = absolute difference of frequency of qid1 and qid2 
 
-#%%
-
-# %%
-file_path = "df_fe_without_preprocessing_train.csv"
-data = process_data(file_path)
-
-#%%
-data.head(5)
-
-# %%[markdown]
-
-#### Check for questions with 2 words or less than 2 words
-
-#%%
-# Filter sentences with 2 words or less in either q1 or q2
-filtered_data = data[(data['q1_n_words'] <= 2) | (data['q2_n_words'] <= 2)]
-
-# Print the filtered sentences along with is_duplicate column and the number of sentences
-num_sentences = len(filtered_data)
-print(f"Number of Sentences: {num_sentences}\n")
-
-for index, row in filtered_data.head(10).iterrows():
-    print(f"Q1: {row['question1']}")
-    print(f"Q2: {row['question2']}")
-    print(f"Is Duplicate: {row['is_duplicate']}")
-    print("-" * 50)
-
-# %%
-print ("Minimum length of the questions in question1 : " , min(data['q1_n_words']))
-
-print ("Minimum length of the questions in question2 : " , min(data['q2_n_words']))
-
-print ("Number of Questions with minimum length [question1] :", data[data['q1_n_words']== 1].shape[0])
-print ("Number of Questions with minimum length [question2] :", data[data['q2_n_words']== 1].shape[0])
-
-#%%[markdown]
-
-#### Univariate Analysis : 'freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words','word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2'.
-
-#%%
-# List of columns to plot
-columns_to_plot = ['freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words',
-                   'word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2']
-
-# Loop through each column and create plots
-for column in columns_to_plot:
-    plt.figure(figsize=(12, 8))
-
-    plt.subplot(1, 2, 1)
-    sns.violinplot(x='is_duplicate', y=column, data=data)
-
-    plt.subplot(1, 2, 2)
-    sns.histplot(data[data['is_duplicate'] == 1.0][column], label="1", color='red', kde=True)
-    sns.histplot(data[data['is_duplicate'] == 0.0][column], label="0", color='blue', kde=True)
-    
-    # Add legend and labels
-    plt.legend()
-    
-    # Set the title at the center for the entire figure
-    plt.suptitle(f'Distribution of {column} for Duplicate and Non-duplicate Questions', fontsize=16, ha='center')
-    
-    plt.xlabel(column)
-    plt.ylabel('Density')
-    
-    plt.show()
-
-#%%
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-
-ax.scatter(data['word_Total'], data['word_share'], data['q2_n_words'], c=data['is_duplicate'], marker='o')
-
-ax.set_xlabel('Feature 1')
-ax.set_ylabel('Feature 2')
-ax.set_zlabel('Feature 3')
-ax.set_title('3D Scatter Plot')
-
-plt.show()
-
-# 'word_Total' and 'word_share' together do a good job in differentiating Duplicates and Non-Duplicates.
-
-#%%[markdown]
-#### Important features in differentiating Duplicate(Similar) and Non-Duplicate(Dissimilar) Questions.
-
-# 1. Distribution of q1len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-# 2. Distribution of q2len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-# 3. Distribution of q1_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-# 4. Distribution of q2_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-# 5. Distribution of word_Total for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-# 6. Distribution of word_share for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
-
 #%%[markdown] 
 ### Pre-processing of Text 
     
@@ -412,8 +332,7 @@ plt.show()
 #### Feature Extraction after pre-processing.
 
 # Featurization (NLP and Fuzzy Features)
-    
-#%%[markdown]
+
 # Definition:
 # - __Token__: You get a token by splitting sentence a space
 # - __Stop_Word__ : stop words as per NLTK.
@@ -472,63 +391,161 @@ plt.show()
 # <br>
 # <br>
 
-# - __longest_substr_ratio__ :  Ratio of length longest common substring to min lenghth of token count of Q1 and Q2<br>longest_substr_ratio = len(longest common substring) / (min(len(q1_tokens), len(q2_tokens))
+# - __longest_substr_ratio__ :  Ratio of length longest common substring to min lenghth of token count of Q1 and Q2<br>longest_substr_ratio = len(longest common substring) / (min(len(q1_tokens), len(q2_tokens)) <br>
 
-#%%
-if os.path.isfile('nlp_features_train.csv'):
-    data = pd.read_csv("nlp_features_train.csv",encoding='latin-1')
-    data.fillna('')
-else:
-    print("Extracting features for train:")
-    data = pd.read_csv("data/train.csv")
-    data = extract_features(data)
-    data.to_csv("nlp_features_train.csv", index=False)
-data.head(2)      
+### Some additional features - Adding some more features which I feel will add good information. <br>
+
+# ratio_q_lengths:  This feature calculates the ratio of the lengths of the two questions. <br>
+
+# common_prefix: This feature computes the length of the common prefix (the initial common sequence of characters) between the two questions. <br>
+
+# common_suffix: This feature calculates the length of the common suffix (the final common sequence of characters) between the two questions. <br>
+
+# diff_words: This feature calculates the absolute difference in the number of words between the two questions. <br>
+
+# diff_chars: This feature computes the absolute difference in the number of characters between the two questions. <br>
+
+# jaccard_similarity: This feature calculates the Jaccard similarity coefficient between the sets of words in the two questions. <br>
+
+# longest_common_subsequence: This feature computes the length of the longest common subsequence (LCS) between the two questions. <br>
 
 #%%[markdown]
 
-### Analysis on newly extracted features
+### Processing and Extracting Features
+# %%
+# Processing and Extracting Features
+file_path = "data_with_features.csv"
 
-#### Pairplot on new features
+# *****************************************************Observations_to_Train*************************************************
+rows_to_train = 5000 # Change as per Needs
+# ***************************************************************************************************************************
+
+if os.path.isfile(file_path):
+    data = pd.read_csv(file_path, encoding='latin-1')
+    data.fillna('', inplace=True)  # Fill NaN values with empty string if needed
+else:
+    data = process_and_extract_features(file_path,rows_to_train)
+#%%
+data.head(5)
+
+# %%[markdown]
+
+#### Check for questions with 2 words or less than 2 words
 
 #%%
-n = data.shape[0]
-sns.pairplot(data[['ctc_min', 'cwc_min', 'csc_min', 'token_sort_ratio', 'is_duplicate']][0:n], hue='is_duplicate', vars=['ctc_min', 'cwc_min', 'csc_min', 'token_sort_ratio'])
-plt.show()
+# Filter sentences with 2 words or less in either q1 or q2
+filtered_data = data[(data['q1_n_words'] <= 2) | (data['q2_n_words'] <= 2)]
+
+# Print the filtered sentences along with is_duplicate column and the number of sentences
+num_sentences = len(filtered_data)
+print(f"Number of Sentences: {num_sentences}\n")
+
+for index, row in filtered_data.head(10).iterrows():
+    print(f"Q1: {row['question1']}")
+    print(f"Q2: {row['question2']}")
+    print(f"Is Duplicate: {row['is_duplicate']}")
+    print("-" * 50)
 
 # %%
+print ("Minimum length of the questions in question1 : " , min(data['q1_n_words']))
 
-# Plot violin plot and distribution plot for each specified column
-for i, feature in enumerate(['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_min', 'ctc_max',
-                             'last_word_eq', 'first_word_eq', 'abs_len_diff', 'mean_len',
-                             'token_set_ratio', 'token_sort_ratio', 'fuzz_ratio',
-                             'fuzz_partial_ratio', 'longest_substr_ratio']):
-    plt.subplot(4, 4, i + 1)
-    sns.violinplot(x='is_duplicate', y=feature, data=data)
-    plt.title(f'Violin Plot for {feature}')
+print ("Minimum length of the questions in question2 : " , min(data['q2_n_words']))
 
-plt.tight_layout()
-plt.show()
+print ("Number of Questions with minimum length [question1] :", data[data['q1_n_words']== 1].shape[0])
+print ("Number of Questions with minimum length [question2] :", data[data['q2_n_words']== 1].shape[0])
 
 #%%
-plt.figure(figsize=(16, 20))
 
-# Plot violin plot and density plot for each specified column
-for i, feature in enumerate(['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_min', 'ctc_max',
-                             'last_word_eq', 'first_word_eq', 'abs_len_diff', 'mean_len',
-                             'token_set_ratio', 'token_sort_ratio', 'fuzz_ratio',
-                             'fuzz_partial_ratio', 'longest_substr_ratio']):
-    plt.subplot(8, 4, 2*i + 1)
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import entropy
+
+# Function to calculate KL Divergence
+def calculate_kl_divergence(duplicate_data, non_duplicate_data, feature):
+    duplicate_dist = duplicate_data[feature].dropna()
+    non_duplicate_dist = non_duplicate_data[feature].dropna()
+
+    epsilon = 1e-10
+    duplicate_dist += epsilon
+    non_duplicate_dist += epsilon
+
+    min_length = min(len(duplicate_dist), len(non_duplicate_dist))
+    duplicate_dist = duplicate_dist.head(min_length)
+    non_duplicate_dist = non_duplicate_dist.head(min_length)
+
+    kl_divergence = entropy(duplicate_dist, non_duplicate_dist)
+    return kl_divergence
+
+features_to_plot = ['freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words',
+                    'word_Common', 'word_Total', 'word_share', 'freq_q1+q2', 'freq_q1-q2',
+                    'ratio_q_lengths', 'common_prefix', 'common_suffix', 'diff_words', 'diff_chars',
+                    'jaccard_similarity', 'longest_common_subsequence', 'cwc_min', 'cwc_max', 'csc_min',
+                    'csc_max', 'ctc_min', 'ctc_max', 'last_word_eq', 'first_word_eq', 'abs_len_diff',
+                    'mean_len', 'token_set_ratio', 'token_sort_ratio', 'fuzz_ratio', 'fuzz_partial_ratio',
+                    'longest_substr_ratio']
+
+#%%
+# Create one image with Violin plots and Density plots for each feature
+num_features = len(features_to_plot)
+plt.figure(figsize=(16, 2*num_features))
+
+for i, feature in enumerate(features_to_plot):
+    plt.subplot(num_features, 2, 2*i + 1)
     sns.violinplot(x='is_duplicate', y=feature, data=data)
     plt.title(f'Violin Plot for {feature}')
 
-    plt.subplot(8, 4, 2*i + 2)
+    plt.subplot(num_features, 2, 2*i + 2)
     sns.kdeplot(data[data['is_duplicate'] == 1][feature], label='Duplicate', shade=True)
     sns.kdeplot(data[data['is_duplicate'] == 0][feature], label='Not Duplicate', shade=True)
     plt.title(f'Density Plot for {feature}')
 
 plt.tight_layout()
 plt.show()
+
+#%%
+# Calculate and visualize inverted KL Divergence
+kl_divergence_results = pd.DataFrame(columns=['Feature', 'KL_Divergence'])
+
+for feature in features_to_plot:
+    kl_divergence = calculate_kl_divergence(data[data['is_duplicate'] == 1], data[data['is_duplicate'] == 0], feature)
+    kl_divergence_results = pd.concat([kl_divergence_results, pd.DataFrame({
+        'Feature': [feature],
+        'KL_Divergence': [kl_divergence]
+    })], ignore_index=True)
+
+# Display KL Divergence results in a table
+print(kl_divergence_results)
+
+# Create a bar plot to visualize inverted KL Divergence
+kl_divergence_results['Inverted_KL_Divergence'] = 1 / (kl_divergence_results['KL_Divergence'] + 1e-10)
+
+plt.figure(figsize=(15, 10))
+sns.barplot(x='Feature', y='Inverted_KL_Divergence', data=kl_divergence_results.sort_values(by='Inverted_KL_Divergence', ascending=False))
+plt.title('Inverted KL Divergence for Each Feature')
+plt.xticks(rotation=45, ha='right')
+plt.show()
+
+#%%
+bottom_5_features = kl_divergence_results.nsmallest(5, 'KL_Divergence')['Feature']
+
+print("The best 5 features are:")
+print(bottom_5_features)
+
+# Pair plot for the top 10 features
+n = data.shape[0]
+sns.pairplot(data[bottom_5_features.tolist() + ['is_duplicate']][0:n], hue='is_duplicate', vars=bottom_5_features.tolist())
+plt.show()
+
+#%%[markdown]
+#### Important features in differentiating Duplicate(Similar) and Non-Duplicate(Dissimilar) Questions.
+
+# 1. Distribution of q1len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 2. Distribution of q2len for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 3. Distribution of q1_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 4. Distribution of q2_n_words for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 5. Distribution of word_Total for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
+# 6. Distribution of word_share for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
 
 #%%[markdown]
 ### Visualizing in lower dimension using t-SNE
@@ -560,6 +577,10 @@ import spacy
 # Load the dataset
 df = pd.read_csv('data/train.csv')
 
+# change this for final training of model
+# ***************************************Observations_to_Train***************************************************************
+df = df[:rows_to_train]
+# ***************************************************************************************************************************
 # Encode questions to unicode
 df['question1'] = df['question1'].apply(lambda x: str(x))
 df['question2'] = df['question2'].apply(lambda x: str(x))
@@ -612,39 +633,198 @@ for qu1, qu2 in tqdm(zip(list(df['question1']), list(df['question2']))):
 df['q1_feats_m'] = list(vecs1)
 df['q2_feats_m'] = list(vecs2)
 
-# Load preprocessed features
-if os.path.isfile('nlp_features_train.csv'):
-    dfnlp = pd.read_csv("nlp_features_train.csv", encoding='latin-1')
+#%%
+# Loading Processing and Extracting Features data
+if os.path.isfile('data_with_features.csv'):
+    dfnlp = pd.read_csv("data_with_features.csv", encoding='latin-1', nrows = rows_to_train)
 else:
-    print("Download nlp_features_train.csv from drive or run previous notebook")
-
-if os.path.isfile('df_fe_without_preprocessing_train.csv'):
-    dfppro = pd.read_csv("df_fe_without_preprocessing_train.csv", encoding='latin-1')
-else:
-    print("Download df_fe_without_preprocessing_train.csv from drive or run previous notebook")
+    print("Run the Processing and Extracting Features Cell")
 
 # Drop unnecessary columns
 df1 = dfnlp.drop(['qid1', 'qid2', 'question1', 'question2'], axis=1)
-df2 = dfppro.drop(['qid1', 'qid2', 'question1', 'question2', 'is_duplicate'], axis=1)
 df3 = df.drop(['qid1', 'qid2', 'question1', 'question2', 'is_duplicate'], axis=1)
 df3_q1 = pd.DataFrame(df3.q1_feats_m.values.tolist(), index=df3.index)
 df3_q2 = pd.DataFrame(df3.q2_feats_m.values.tolist(), index=df3.index)
 
 # Display information about features
 print("Number of features in nlp dataframe:", df1.shape[1])
-print("Number of features in preprocessed dataframe:", df2.shape[1])
-print("Number of features in question1 w2v dataframe:", df3_q1.shape[1])
-print("Number of features in question2 w2v dataframe:", df3_q2.shape[1])
-print("Number of features in the final dataframe:", df1.shape[1] + df2.shape[1] + df3_q1.shape[1] + df3_q2.shape[1])
+print("Head(5) of nlp dataframe:")
+print(df1.head(5))
 
-# Store the final features to a CSV file
+print("\nNumber of features in question1 w2v dataframe:", df3_q1.shape[1])
+print("Head(5) of question1 w2v dataframe:")
+print(df3_q1.head(5))
+
+print("\nNumber of features in question2 w2v dataframe:", df3_q2.shape[1])
+print("Head(5) of question2 w2v dataframe:")
+print(df3_q2.head(5))
+
+print("\nNumber of features in the final dataframe:", df1.shape[1] + df3_q1.shape[1] + df3_q2.shape[1])
+
+#%%
+# Check if the final_features.csv file already exists
 if not os.path.isfile('final_features.csv'):
+    # Add id column to df3_q1 and df3_q2
     df3_q1['id'] = df1['id']
     df3_q2['id'] = df1['id']
-    df1 = df1.merge(df2, on='id', how='left')
-    df2 = df3_q1.merge(df3_q2, on='id', how='left')
-    result = df1.merge(df2, on='id', how='left')
-    result.to_csv('final_features.csv')
+    
+    # Merge df1 with df3_q1 and df3_q2 on 'id'
+    result = df1.merge(df3_q1, on='id', how='left').merge(df3_q2, on='id', how='left')
+    
+    # Save the result to final_features.csv
+    result.to_csv('final_features.csv', index=False)
+
+#%%
+# Read the CSV file
+df = pd.read_csv('final_features.csv')
 
 # %%
+# Replace non-numeric values with NaN
+df.replace({col: {'_x': np.nan} for col in data.columns}, inplace=True)
 
+# Check if there are any NA values in the DataFrame
+if df.isna().any().any():
+    print("NA Values Present")
+else:
+    print("No NA Values Present")
+
+# Check the number of NaN values in each column after replacement
+nan_counts = df.isna().sum()
+print("Number of NaN values in each column after replacement:")
+print(nan_counts)
+
+#%%
+# Remove the first row 
+# df.drop(data.index[0], inplace=True)
+
+# Get the target variable
+y_true = df['is_duplicate']
+df.drop(['id', 'is_duplicate'], axis=1, inplace=True)
+
+print(df.shape)
+
+# Convert all the features into numeric
+cols = list(df.columns)
+for i in cols:
+    df[i] = pd.to_numeric(df[i], errors='coerce')
+
+#%%
+# Check for NA Values
+if df.isna().any().any():
+    print("NA Values Present")
+else:
+    print("No NA Values Present")
+# Check the number of NaN values in each column after conversion
+nan_counts_after_conversion = df.isna().sum()
+print("Number of NaN values in each column after conversion:")
+print(nan_counts_after_conversion)
+
+# Convert y_true to a list of integers
+y_true = list(map(int, y_true.values))
+
+# Display the first few rows of the data
+df.head()
+
+#%%[markdown]
+### Splitting into Train and Test Data
+
+# %%
+from sklearn.model_selection import train_test_split
+
+X_train,X_test, y_train, y_test = train_test_split(df, y_true, stratify=y_true, test_size=0.3)
+
+# Convert lists to DataFrames if they are not already
+X_train = pd.DataFrame(X_train)
+X_test = pd.DataFrame(X_test)
+y_train = pd.DataFrame(y_train)
+y_test = pd.DataFrame(y_test)
+
+# Create a DataFrame to display the sizes of the splits
+split_sizes = pd.DataFrame({
+    'Data Split': ['X_train', 'X_test', 'y_train', 'y_test'],
+    'Size': [X_train.shape[0], X_test.shape[0], y_train.shape[0], y_test.shape[0]]
+})
+
+# Display the split sizes in tabular format
+print("Size of Data Splits:")
+print(split_sizes)
+
+# Print head(5) for each split
+print("Head of X_train:")
+print(X_train.head())
+
+print("\nHead of X_test:")
+print(X_test.head())
+
+print("\nHead of y_train:")
+print(y_train.head())
+
+print("\nHead of y_test:")
+print(y_test.head())
+
+# %%[markdown]
+### Distribution of Output Variable in Train and Test Data
+
+#%%
+# Plotting the distribution of the output variable in train data
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+sns.countplot(x=y_train.iloc[:, 0])
+plt.title('Distribution of Output Variable in Train Data')
+
+# Plotting the distribution of the output variable in test data
+plt.subplot(1, 2, 2)
+sns.countplot(x=y_test.iloc[:, 0])
+plt.title('Distribution of Output Variable in Test Data')
+
+plt.show()
+
+#%%[markdown]
+### Using a Random Model to Predict and Noting Performance 
+
+# Our Models should perform better than the Random Model
+
+#%%
+from sklearn.metrics import log_loss
+
+# Generate random predictions for y_train
+np.random.seed(42)  # Set seed for reproducibility
+random_predictions_train = np.random.rand(len(y_train))
+
+# Ensure the predictions sum up to 1 for each sample
+random_predictions_train /= random_predictions_train.sum(keepdims=True)
+
+# Calculate log loss for y_train
+log_loss_train = log_loss(y_train, random_predictions_train)
+
+# Display the log loss for the training data
+print(f'Log Loss for Training Data: {log_loss_train:.5f}')
+
+# Generate random predictions for y_test
+random_predictions_test = np.random.rand(len(y_test))
+random_predictions_test /= random_predictions_test.sum(keepdims=True)
+
+# Calculate log loss for y_test
+log_loss_test = log_loss(y_test, random_predictions_test)
+
+# Display the log loss for the test data
+print(f'Log Loss for Test Data: {log_loss_test:.5f}')
+
+#%%[markdown]
+
+### Logistic Regression ----> Baseline Model
+
+#%%
+logistic_regression_function(X_train, X_test, y_train, y_test)
+
+#%%[markdown]
+
+### SGDClassifier for predict </br>
+
+# Performing hyperparameter tuning using RandomizedSearchCV for an SGDClassifier with elastic net penalty, followed by training, evaluation, and visualization of the best model. </br> 
+# The evaluation includes log loss calculation and display of the confusion matrix.
+
+#%%
+sgd_random_search_v1(X_train, X_test, y_train, y_test)
+
+#%%[markdown]
