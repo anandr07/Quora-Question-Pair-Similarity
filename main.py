@@ -417,7 +417,8 @@ plt.show()
 file_path = "data_with_features.csv"
 
 # *****************************************************Observations_to_Train*************************************************
-rows_to_train = 5000 # Change as per Needs
+rows_to_train = data.shape[0] # Change as per Needs
+print(f"TRAINING WITH {rows_to_train} OBSERVATIONS")
 # ***************************************************************************************************************************
 
 if os.path.isfile(file_path):
