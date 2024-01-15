@@ -417,7 +417,7 @@ plt.show()
 file_path = "data_with_features.csv"
 
 # *****************************************************Observations_to_Train*************************************************
-rows_to_train = data.shape[0] # Change as per Needs
+rows_to_train = 200000 # Change as per Needs
 print(f"TRAINING WITH {rows_to_train} OBSERVATIONS")
 # ***************************************************************************************************************************
 
@@ -574,6 +574,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import spacy
+from spacy.cli import download
 
 # Load the dataset
 df = pd.read_csv('data/train.csv')
@@ -594,9 +595,22 @@ tfidf = TfidfVectorizer(lowercase=False)
 tfidf.fit_transform(questions)
 word2tfidf = dict(zip(tfidf.get_feature_names_out(), tfidf.idf_))
 
-# Download spaCy model
-!python -m spacy download en_core_web_lg
-nlp = spacy.load('en_core_web_lg')
+def load_spacy_model(model_name='en_core_web_lg'):
+    try:
+        # Check if the spaCy model is already installed
+        nlp = spacy.load(model_name)
+        print(f"spaCy model '{model_name}' loaded successfully.")
+    except OSError:
+        print(f"Model '{model_name}' not found. Downloading...")
+        # Download the spaCy model if not already installed
+        download(model_name)
+        nlp = spacy.load(model_name)
+        print(f"spaCy model '{model_name}' downloaded and loaded successfully.")
+
+    return nlp
+
+# Load spaCy model
+nlp = load_spacy_model()
 
 # Extract features using spaCy
 vecs1 = []
