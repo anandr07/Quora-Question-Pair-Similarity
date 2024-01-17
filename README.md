@@ -1,3 +1,4 @@
 # Quora-Question-Pair-Similarity
 
-Quora Duplicate Question Identification Project: Streamlining Quora's question and answer experience by implementing advanced natural language processing techniques to identify and manage duplicate questions. The project aims to enhance user satisfaction by optimizing the search for quality answers and minimizing redundancy in question responses.
+Quora Question Pair Similarity project aims to identify duplicate questions using natural language processing. Leveraging machine learning algorithms like Logistic Regression, SGD Classifier, and XGBoost, the system achieves accurate classification, enhancing user experience by reducing redundancy in question content on the Quora platform.
+
