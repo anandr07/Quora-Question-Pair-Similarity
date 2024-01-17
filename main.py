@@ -1,4 +1,4 @@
-#%%[markdown]
+#%%[markdown]   
 ## Quora Question Pairs 
 # Identifying questions on quora with same intent 
 
@@ -88,7 +88,9 @@ sys.path.append(os.getcwd()+'\ml_algorithms')
 
 #%%
 from Logistic_Regression import logistic_regression_function
-from SGDClassfier_RandomSearch_V1 import sgd_random_search_v1
+from SGDClassfier_RandomSearch import sgd_random_search_v1
+from NaiveBayes import naive_bayes_function
+from XGBoost_Random_Search import xgboost_random_search
 # # Getting the current script's directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -318,17 +320,6 @@ plt.show()
 # - ____freq_q1-freq_q2____ = absolute difference of frequency of qid1 and qid2 
 
 #%%[markdown] 
-### Pre-processing of Text 
-    
-#%%[markdown]  
-# - Preprocessing:
-# 1. Removing html tags 
-# 2. Removing Punctuations
-# 3. Performing stemming
-# 4. Removing Stopwords
-# 5. Expanding contractions etc.
-
-#%%[markdown] 
 #### Feature Extraction after pre-processing.
 
 # Featurization (NLP and Fuzzy Features)
@@ -417,10 +408,26 @@ plt.show()
 file_path = "data_with_features.csv"
 
 # *****************************************************Observations_to_Train*************************************************
-rows_to_train = 200000 # Change as per Needs
+rows_to_train = 100000 # Change as per Needs
 print(f"TRAINING WITH {rows_to_train} OBSERVATIONS")
 # ***************************************************************************************************************************
 
+#%%[markdown] 
+### Pre-processing of Text 
+    
+#%%[markdown]  
+# - Preprocessing:
+# 1. Removing html tags 
+# 2. Removing Punctuations
+# 3. Performing stemming
+# 4. Removing Stopwords
+# 5. Expanding contractions etc.
+
+#%%[markdown]
+
+### Extracting Features
+
+#%%
 if os.path.isfile(file_path):
     data = pd.read_csv(file_path, encoding='latin-1')
     data.fillna('', inplace=True)  # Fill NaN values with empty string if needed
@@ -843,3 +850,15 @@ logistic_regression_function(X_train, X_test, y_train, y_test)
 sgd_random_search_v1(X_train, X_test, y_train, y_test)
 
 #%%[markdown]
+### NaiveBayesClassifier for prediction </br>
+
+#%%
+naive_bayes_function(X_train, X_test, y_train, y_test)
+
+#%%[markdown]
+### XGBoost for prediction </br>
+
+#%%
+xgboost_random_search(X_train, X_test, y_train, y_test)
+
+#%%
