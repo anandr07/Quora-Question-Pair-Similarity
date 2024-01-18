@@ -30,4 +30,28 @@ Adaptable threshold for probability of classification.
 The objective is to classify whether two given questions are having same intention, typical classification problem. Create a application that takes two questions as input and in return tells if the questions have same meaning or not.
 
 # Performance Metric
-Metric(s): Log-Loss and Binary Confusion Matrix
+- Random Model:
+   - Log Loss for Training Data: 4.27141
+   - Log Loss for Test Data: 3.95542
+- Logistic Regression:
+   - Train Log Loss: 0.46723
+   - Test Log Loss: 0.47019
+- SGDClassifier:
+   - Train Log Loss: 0.44927
+   - Test Log Loss: 0.45210
+- NaiveBayesClassifier
+   - Train Log Loss: 11.47686
+   - Test Log Loss: 11.49861
+- XGBoost
+   - Train Log Loss: 0.23361
+   - Test Log Loss: 0.35239
+     
+Log loss metrics reveal model performance. Random Model shows high log loss (4.27 train, 3.96 test). Logistic Regression and SGDClassifier perform well, while NaiveBayesClassifier indicates poor performance. XGBoost demonstrates effective generalization (0.23 train, 0.35 test).
+
+# Importing Needed Libraries and accessing other py files(feature-extraction)
+The project initiates data analysis and machine learning by importing essential Python libraries, including feature extraction, data visualization, and algorithms. It accesses specific functionalities from the 'feature_extraction' and 'ml_algorithms' modules for further use.
+
+# Load the Data and Perform Data Analysis
+Read CSV file into a Pandas DataFrame, display the first five rows and provide information about the dataset. It identifies missing values, visualizes them with a bar plot, and then drops the rows with null values, resulting in three rows being removed. The dataset initially has 404,290 entries, and after dropping rows with missing values, it has 404,287 entries. There are two null values in question 2 and one null value in question 1, dropping those rows.
+![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/2b53febd-486d-4097-9bc8-c62308a77fe3)
+
