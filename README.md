@@ -55,3 +55,22 @@ The project initiates data analysis and machine learning by importing essential 
 Read CSV file into a Pandas DataFrame, display the first five rows and provide information about the dataset. It identifies missing values, visualizes them with a bar plot, and then drops the rows with null values, resulting in three rows being removed. The dataset initially has 404,290 entries, and after dropping rows with missing values, it has 404,287 entries. There are two null values in question 2 and one null value in question 1, dropping those rows.
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/2b53febd-486d-4097-9bc8-c62308a77fe3)
 
+# Distribution of data points among output classes (Similar and Non Similar Questions
+- <b> Distribution of Duplicate and Non-duplicate Questions: </b>
+  The bar plot illustrates the percentage distribution of questions categorized as duplicate and non-duplicate, checking for balance in the 'is_duplicate' column.
+
+  ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/f7b9d6f6-a832-4443-83aa-27bdcd239590)
+
+- <b>Number of Unique and Repeated Questions:</b>
+  Analyzing the dataset reveals 537,929 unique questions. About 20.78% of questions appear more than once, with the maximum repetition being 157 times.
+  
+  ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/7ebc3018-e117-4ee5-8903-fdd4a06277e6)
+
+- <b>Checking for Duplicates:</b>
+  No rows are found where 'qid1' and 'qid2' are the same or interchanged, indicating no duplicate question pairs in the dataset.
+
+- <b>Number of Occurrences of Each Question:</b>
+  The histogram shows the log-scale distribution of the number of occurrences for each question, highlighting the maximum occurrence with a red dashed line.
+  
+  ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/fde24825-f2ba-4079-b084-838138cd5d96)
+  The plot is close to a power-law distribution not exactly power-law but close to it.
