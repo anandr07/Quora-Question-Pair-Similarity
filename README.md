@@ -30,23 +30,9 @@ Adaptable threshold for probability of classification.
 The objective is to classify whether two given questions are having same intention, typical classification problem. Create a application that takes two questions as input and in return tells if the questions have same meaning or not.
 
 # Performance Metric
-- Random Model:
-   - Log Loss for Training Data: 4.27141
-   - Log Loss for Test Data: 3.95542
-- Logistic Regression:
-   - Train Log Loss: 0.46723
-   - Test Log Loss: 0.47019
-- SGDClassifier:
-   - Train Log Loss: 0.44927
-   - Test Log Loss: 0.45210
-- NaiveBayesClassifier
-   - Train Log Loss: 11.47686
-   - Test Log Loss: 11.49861
-- XGBoost
-   - Train Log Loss: 0.23361
-   - Test Log Loss: 0.35239
-     
-Log loss metrics reveal model performance. Random Model shows high log loss (4.27 train, 3.96 test). Logistic Regression and SGDClassifier perform well, while NaiveBayesClassifier indicates poor performance. XGBoost demonstrates effective generalization (0.23 train, 0.35 test).
+Metric(s): 
+- Log-Loss
+- Binary Confusion Matrix
 
 # Importing Needed Libraries and accessing other py files(feature-extraction)
 The project initiates data analysis and machine learning by importing essential Python libraries, including feature extraction, data visualization, and algorithms. It accesses specific functionalities from the 'feature_extraction' and 'ml_algorithms' modules for further use.
@@ -74,3 +60,60 @@ Read CSV file into a Pandas DataFrame, display the first five rows and provide i
   
   ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/fde24825-f2ba-4079-b084-838138cd5d96)
   The plot is close to a power-law distribution not exactly power-law but close to it.
+
+# Top 10 Most asked questions on Quora:
+- What are the best ways to lose weight?                                                                161
+- How can you look at someone's private Instagram account without following them?                       120
+- How can I lose weight quickly?                                                                        111
+- What's the easiest way to make money online?                                                           88
+- Can you see who views your Instagram?                                                                  79
+- What are some things new employees should know going into their first day at AT&T?                     77
+- What do you think of the decision by the Indian Government to demonetize 500 and 1000 rupee notes?     68
+- Which is the best digital marketing course?                                                            66
+- How can you increase your height?                                                                      63
+- How do l see who viewed my videos on Instagram?                                                        61
+
+# Distribution of Question Lengths:
+Function determines the number of words in a sentence. It then applies this function to both 'question1' and 'question2' columns in a DataFrame. The resulting word counts are visualized using histograms for each question, allowing for a comparison of the distribution of question lengths.
+
+![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/d7c99aa6-f34d-4a1e-903f-60c54cf68516)
+
+References for feature extraction:
+
+- Kaggle Winning Solution and other approaches: https://www.dropbox.com/sh/93968nfnrzh8bp5/AACZdtsApc1QSTQc7X0H3QZ5a?dl=0
+- Blog 1 : https://engineering.quora.com/Semantic-Question-Matching-with-Deep-Learning
+- Blog 2 : https://towardsdatascience.com/identifying-duplicate-questions-on-quora-top-12-on-kaggle-4c1cf93f1c30
+
+# Feature Engineering
+
+
+# Results
+- Random Model:
+   - Log Loss for Training Data: 4.27141
+   - Log Loss for Test Data: 3.95542
+- Logistic Regression:
+   - Train Log Loss: 0.46723
+   - Test Log Loss: 0.47019
+
+   ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/373166de-e3bb-448c-a98f-be2dc9ab9a00)
+
+- SGDClassifier:
+   - Train Log Loss: 0.44927
+   - Test Log Loss: 0.45210
+  
+   ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/2063189e-f6ed-48fe-a355-f9d8761bbf90)
+
+- NaiveBayesClassifier
+   - Train Log Loss: 11.47686
+   - Test Log Loss: 11.49861
+
+   ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/cde92940-3723-4659-ab08-df0126109c90)
+
+- XGBoost
+   - Train Log Loss: 0.23361
+   - Test Log Loss: 0.35239
+
+   ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/67c8502c-1a5c-4819-ab68-5d3315f5af25)
+
+     
+Log loss metrics reveal model performance. Random Model shows high log loss (4.27 train, 3.96 test). Logistic Regression and SGDClassifier perform well, while NaiveBayesClassifier indicates poor performance. XGBoost demonstrates effective generalization (0.23 train, 0.35 test).
