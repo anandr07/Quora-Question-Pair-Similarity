@@ -3,6 +3,38 @@
 Quora Question Pair Similarity project aims to identify duplicate questions using natural language processing. Leveraging machine learning algorithms like Logistic Regression, SGD Classifier, and XGBoost, the system achieves accurate classification, enhancing user experience by reducing redundancy in question content on the Quora platform.
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/d7ef0672-2561-4b55-900d-e52f70217373)
 
+## Table of Contents
+
+1. [Problem Statement](#problem-statement)
+2. [Dataset Description](#dataset-description)
+3. [Project Architecture](#project-architecture)
+4. [File Structure](#file-structure)
+5. [Data Details](#data-details)
+6. [Performance Metric](#performance-metric)
+7. [Load the Data and Perform Data Analysis](#load-the-data-and-perform-data-analysis)
+8. [Top 10 Most Asked Questions on Quora](#top-10-most-asked-questions-on-quora)
+9. [Distribution of Question Lengths](#distribution-of-question-lengths)
+10. [Feature Engineering](#feature-engineering)
+   - [Feature Extraction](#feature-extraction)
+     
+   - [Processing and Extracting Features](#processing-and-extracting-features)
+    
+   - [Pre-processing of Text](#pre-processing-of-text)
+     
+   - [Extracting Features](#extracting-features) 
+
+   - [Visualizing in Lower Dimension using t-SNE](#visualizing-in-lower-dimension-using-t-sne)
+   - [Featurizing Text Data with Tf-Idf Weighted Word-Vectors](#featurizing-text-data-with-tf-idf-weighted-word-vectors)
+     
+11. [Splitting into Train and Test Data](#splitting-into-train-and-test-data)
+  
+     
+12. [Distribution of Output Variable in Train and Test Data](#distribution-of-output-variable-in-train-and-test-data)
+  
+     
+13. [Results](#results)
+   
+
 # Problem Statement
 Where else but Quora can a physicist help a chef with a math problem and get cooking tips in return? Quora is a place to gain and share knowledge—about anything. It’s a platform to ask questions and connect with people who contribute unique insights and quality answers. This empowers people to learn from each other and to better understand the world. Over 100 million people visit Quora every month, so it's no surprise that many people ask similarly worded questions. Multiple questions with the same intent can cause seekers to spend more time finding the best answer to their question, and make writers feel they need to answer multiple versions of the same question. Quora values canonical questions because they provide a better experience to active seekers and writers, and offer more value to both of these groups in the long term. Currently, Quora uses a Random Forest model to identify duplicate questions. In this competition, Kagglers are challenged to tackle this natural language processing problem by applying advanced techniques to classify whether question pairs are duplicates or not. Doing so will make it easier to find high quality answers to questions resulting in an improved experience for Quora writers, seekers, and readers.
 
