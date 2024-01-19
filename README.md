@@ -184,14 +184,14 @@ mean_len = (len(q1_tokens) + len(q2_tokens))/2
 - __longest_substr_ratio__ : Ratio of length longest common substring to min lenghth of token count of Q1 and Q2
 longest_substr_ratio = len(longest common substring) / (min(len(q1_tokens), len(q2_tokens))
 
-## Some additional features - Adding some more features which I feel will add good information.
-- __ratio_q_lengths__: This feature calculates the ratio of the lengths of the two questions.
-- __common_prefix__: This feature computes the length of the common prefix (the initial common sequence of characters) between the two questions.
-- __common_suffix__: This feature calculates the length of the common suffix (the final common sequence of characters) between the two questions.
-- __diff_words__: This feature calculates the absolute difference in the number of words between the two questions.
-- __diff_chars__: This feature computes the absolute difference in the number of characters between the two questions.
-- __jaccard_similarity__: This feature calculates the Jaccard similarity coefficient between the sets of words in the two questions.
-- __longest_common_subsequence__: This feature computes the length of the longest common subsequence (LCS) between the two questions.
+## Some additional features
+- **ratio_q_lengths**: Calculates the ratio of the lengths of the two questions.
+- **common_prefix**: Computes the length of the common prefix (the initial common sequence of characters) between the two questions.
+- **common_suffix**: Calculates the length of the common suffix (the final common sequence of characters) between the two questions.
+- **diff_words**: Calculates the absolute difference in the number of words between the two questions.
+- **diff_chars**: Computes the absolute difference in the number of characters between the two questions.
+- **jaccard_similarity**: Calculates the Jaccard similarity coefficient between the sets of words in the two questions.
+- **longest_common_subsequence**: Computes the length of the longest common subsequence (LCS) between the two questions.
 
 ## Processing and Extracting Features
 Sets the file path for a CSV file named "data_with_features.csv." It also specifies the number of rows to be used for training the model, with the variable rows_to_train set to 100,000. This number can be adjusted based on specific needs or dataset sizes. 
