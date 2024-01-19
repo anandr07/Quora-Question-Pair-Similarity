@@ -212,8 +212,6 @@ Function generates features for the specified number of rows (rows_to_train), an
 ### Check for questions with 2 words or less than 2 words
 Filters sentences from the DataFrame based on the condition that either 'q1' or 'q2' should have two words or fewer. The filtered data is stored in a new DataFrame called filtered_data. Then prints details for the first 10 filtered sentences and the total number of sentences meeting the criteria. This filtering process helps inspect and understand specific characteristics of sentences with a low word count in either 'q1' or 'q2'.
 
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/fcf57440-d9a2-4cf8-b626-678d98899d68)
-
 Provide insights into the distribution of question lengths, highlighting the minimum lengths and the number of questions with the minimum length in both 'question1' and 'question2'.
 
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/87392c85-36a2-4c62-a868-edcb5bf4a676)
