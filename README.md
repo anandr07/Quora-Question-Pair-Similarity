@@ -254,20 +254,14 @@ Identifies the bottom (least discriminative) 5 features based on their calculate
 - Extracts features for each question in the dataset using spaCy, considering the semantic meaning of words and their TF-IDF weights. These features are then added to the DataFrame for further analysis.
 - Loads processed features, drops unnecessary columns, extracts features for Question 1 and Question 2, and displays information about the features in separate DataFrames.
 
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/b5c1a042-934f-4596-8088-7e558ca15100)
-
 -  Consolidates the features from different DataFrames into a single DataFrame and saves it to the specified CSV file for further use.
 -  The code replaces non-numeric values in the DataFrame with NaN, checks for the presence of NaN values, and prints the count of NaN values in each column after replacement.
-  
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/a0fb64f5-ca24-4823-adae-bb9d2b0c7fc1)
 
 - Converts all features to numeric format, handling any errors by coercing non-numeric values to NaN.
 
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/af6265dc-4f9c-4576-99e3-820c82fc03a4)
+### Due to lack of Computation Power the models are trained on 100,000 Rows.
 
 - Checks if there are any NA (missing) values in the DataFrame after converting features to numeric format. If present, it prints "NA Values Present"; otherwise, it prints "No NA Values Present." It then displays the number of NaN values in each column after the conversion. Additionally, it converts the target variable y_true to a list of integers and shows the first few rows of the DataFrame.
-
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/c057e544-6ddc-409c-8a0d-c5744bf945b4)
 
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/09414d7e-e0aa-4770-9c15-25bb1c3cc201)
 
