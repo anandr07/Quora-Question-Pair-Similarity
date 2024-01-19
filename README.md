@@ -266,9 +266,8 @@ Identifies the bottom (least discriminative) 5 features based on their calculate
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/09414d7e-e0aa-4770-9c15-25bb1c3cc201)
 
 ## Splitting into Train and Test Data
-Performs a train-test split on the features (df) and the target variable (y_true) using the train_test_split function from scikit-learn. The sizes of these splits are displayed in a tabular format, and the first 5 rows of each split are printed.
-
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/ddd77c10-f735-4553-8071-aa1a97fe7840)
+Train Data : 70%
+Test Data : 30%
 
 ## Distribution of Output Variable in Train and Test Data
 The left subplot shows the distribution in the training data, while the right subplot shows the distribution in the testing data. This helps to understand the balance or imbalance in the classes of the output variable.
