@@ -248,8 +248,6 @@ Identifies the bottom (least discriminative) 5 features based on their calculate
 
 ### Visualizing in lower dimension using t-SNE
 
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/57b2af71-43f9-484e-b25c-98082853ab19)
-
 ![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/068bb8cd-3415-40a7-adfd-ff7d5aaa30d5)
 
 ### Featurizing text data with Tf-Idf weighted word-vectors
