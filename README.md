@@ -244,9 +244,9 @@ Identifies the bottom (least discriminative) 5 features based on their calculate
 - Distribution of word_Total for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
 - Distribution of word_share for Duplicate and Non-duplicate Questions overlap but not completely making it a good feature.
 
-### Visualizing in lower dimension using t-SNE
+### Visualizing in lower dimension using t-SNE - 3D
 
-![image](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/068bb8cd-3415-40a7-adfd-ff7d5aaa30d5)
+![3D_plot](https://github.com/anandr07/Quora-Question-Pair-Similarity/assets/66896800/91a22212-b9e4-4662-85f0-1f42d32bb449)
 
 ### Featurizing text data with Tf-Idf weighted word-vectors
 - Extracts features for each question in the dataset using spaCy, considering the semantic meaning of words and their TF-IDF weights. These features are then added to the DataFrame for further analysis.
